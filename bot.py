@@ -9,6 +9,7 @@ from aiogram.utils import executor
 from aiogram.dispatcher import Dispatcher
 from aiogram.contrib.fsm_storage.memory import MemoryStorage
 from aiogram.dispatcher import FSMContext
+from aiogram.utils.executor import start_webhook
 
 from sqlalchemy.orm import sessionmaker
 
@@ -91,6 +92,9 @@ async def on_startup(dispatcher):
     await set_default_commands(dispatcher)
     await bot.set_webhook(WEBHOOK_URL, drop_pending_updates=True)
 
+async def on_shutdown(dispatcher):
+    await bot.delete_webhook()
+
 
 def get_predictions():
     predictions = session.query(Prediction).all()
@@ -155,4 +159,13 @@ if __name__ == '__main__':
     executor_predictions = Thread(target=run_schedule, args=())
     executor_predictions.start()
 
-    executor.start_polling(dp, on_startup=on_startup)
+    # executor.start_polling(dp, on_startup=on_startup)
+    start_webhook(
+        dispatcher=dp,
+        webhook_path=WEBHOOK_PATH,
+        skip_updates=True,
+        on_startup=on_startup,
+        on_shutdown=on_shutdown,
+        host=WEBAPP_HOST,
+        port=WEBAPP_PORT,
+    )
