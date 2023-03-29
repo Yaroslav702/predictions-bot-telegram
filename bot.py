@@ -16,9 +16,18 @@ from database import *
 from keyboards import *
 
 load_dotenv()
+TOKEN = os.getenv('TOKEN')
 
-bot = Bot(token=os.getenv('TOKEN'))
+bot = Bot(token=TOKEN)
 dp = Dispatcher(bot, storage=MemoryStorage())
+
+HEROKU_APP_NAME = os.getenv('HEROKU_APP_NAME')
+WEBHOOK_HOST = f'https://{HEROKU_APP_NAME}.herokuapp.com/'
+WEBHOOK_PATH = f'/webhook/{TOKEN}'
+WEBHOOK_URL = f'{WEBHOOK_HOST}{WEBHOOK_PATH}'
+
+WEBAPP_HOST = '0.0.0.0'
+WEBAPP_PORT = 8000
 
 engine = ENGINE
 Session = sessionmaker(engine)
@@ -80,6 +89,7 @@ async def set_notifications_time(callback_query: types.CallbackQuery, state: FSM
 
 async def on_startup(dispatcher):
     await set_default_commands(dispatcher)
+    await bot.set_webhook(WEBHOOK_URL, drop_pending_updates=True)
 
 
 def get_predictions():
