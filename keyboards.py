@@ -14,10 +14,3 @@ set_time_keyboard = InlineKeyboardMarkup(
         [InlineKeyboardButton(text='20:00', callback_data=json.dumps({'time': 20}))]
     ],
 )
-
-commands_keyboard = ReplyKeyboardMarkup(
-    keyboard=[
-        [KeyboardButton(text='Змінити час отримання сповіщень⏰')]
-    ],
-    resize_keyboard=True
-)

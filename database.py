@@ -27,5 +27,11 @@ class User(Base):
     notification_time = Column(Integer, nullable=True, default=9)
 
 
+class Prediction(Base):
+    __tablename__ = 'predictions'
+    id = Column(Integer, primary_key=True)
+    text = Column(String, nullable=False)
+
+
 Base.metadata.create_all(ENGINE)
 print('Database Successfully created')
