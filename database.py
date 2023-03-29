@@ -11,7 +11,7 @@ host = os.getenv('HOST')
 database = os.getenv('DB_NAME')
 port = os.getenv('PORT')
 
-ENGINE = create_engine(f'postgres+psycopg2://{user}:{password}@{host}:\
+ENGINE = create_engine(f'postgres://{user}:{password}@{host}:\
 {port}/{database}')
 
 Base = declarative_base()
