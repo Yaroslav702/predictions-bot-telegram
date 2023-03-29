@@ -22,14 +22,6 @@ TOKEN = os.getenv('TOKEN')
 bot = Bot(token=TOKEN)
 dp = Dispatcher(bot, storage=MemoryStorage())
 
-HEROKU_APP_NAME = os.getenv('HEROKU_APP_NAME')
-WEBHOOK_HOST = f'https://{HEROKU_APP_NAME}.herokuapp.com/'
-WEBHOOK_PATH = f'/webhook/{TOKEN}'
-WEBHOOK_URL = f'{WEBHOOK_HOST}{WEBHOOK_PATH}'
-
-WEBAPP_HOST = '0.0.0.0'
-WEBAPP_PORT = 8000
-
 engine = ENGINE
 Session = sessionmaker(engine)
 session = Session()
@@ -91,9 +83,6 @@ async def set_notifications_time(callback_query: types.CallbackQuery, state: FSM
 async def on_startup(dispatcher):
     await set_default_commands(dispatcher)
     await bot.set_webhook(WEBHOOK_URL, drop_pending_updates=True)
-
-async def on_shutdown(dispatcher):
-    await bot.delete_webhook()
 
 
 def get_predictions():
@@ -159,13 +148,4 @@ if __name__ == '__main__':
     executor_predictions = Thread(target=run_schedule, args=())
     executor_predictions.start()
 
-    # executor.start_polling(dp, on_startup=on_startup)
-    start_webhook(
-        dispatcher=dp,
-        webhook_path=WEBHOOK_PATH,
-        skip_updates=True,
-        on_startup=on_startup,
-        on_shutdown=on_shutdown,
-        host=WEBAPP_HOST,
-        port=WEBAPP_PORT,
-    )
+    executor.start_polling(dp, on_startup=on_startup)
