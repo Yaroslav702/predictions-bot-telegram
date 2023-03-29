@@ -82,7 +82,6 @@ async def set_notifications_time(callback_query: types.CallbackQuery, state: FSM
 
 async def on_startup(dispatcher):
     await set_default_commands(dispatcher)
-    await bot.set_webhook(WEBHOOK_URL, drop_pending_updates=True)
 
 
 def get_predictions():
