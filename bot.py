@@ -28,11 +28,14 @@ session = Session()
 
 loop = asyncio.get_event_loop()
 
+ADMINS = [1050696532, 620483942]
+
 async def set_default_commands(dp):
     await bot.set_my_commands(
         [
             types.BotCommand('start', "Запустити бота."),
-            types.BotCommand('change_time', "Змінити час для сповіщень.")
+            types.BotCommand('change_time', "Змінити час для сповіщень."),
+            types.BotCommand('add_prediction', "Додати нове передбачення.")
         ]
         
     )
@@ -54,7 +57,7 @@ async def process_start_command(message: types.Message, state: FSMContext):
         session.add(new_user)
         session.commit()
 
-        await bot.send_message(message.from_user.id, 'Привіт!🥰\nЯ - бот з передбаченнями.\nОбери час, у який тобі зручно отримувати сповіщення.🎱', reply_markup=set_time_keyboard)
+        await bot.send_message(message.from_user.id, 'Привіт!🥰\nЯ - бот з передбаченнями.\nОбери час, у який тобі зручно отримувати сповіщення🎱', reply_markup=set_time_keyboard)
     else:
         user_notifications_time = user.notification_time
         await bot.send_message(message.from_user.id, f'Ви уже зареєстровані. 😊\nЧас отримання передбачень - <b>{user_notifications_time}:00</b>', parse_mode='html')
@@ -63,7 +66,7 @@ async def process_start_command(message: types.Message, state: FSMContext):
 
 @dp.message_handler(state='*', commands='change_time')
 async def change_notifications_time(message: types.Message, state: FSMContext):
-    await bot.send_message(message.from_user.id, 'Обери час, у який тобі зручно отримувати сповіщення.🎱', reply_markup=set_time_keyboard)
+    await bot.send_message(message.from_user.id, 'Обери час, у який тобі зручно отримувати сповіщення🎱', reply_markup=set_time_keyboard)
     await state.set_state('save_notifications_time')
 
 @dp.callback_query_handler(lambda x: x.data, state='save_notifications_time')
@@ -79,6 +82,21 @@ async def set_notifications_time(callback_query: types.CallbackQuery, state: FSM
         await bot.send_message(callback_query.message.chat.id, text=f'Чудово!\nТепер ти отримуватимеш сповіщення о <b>{time}:00</b>.', parse_mode='html')
         await state.set_state('default')
 
+@dp.message_handler(state='*', commands='add_prediction')
+async def add_prediction(message: types.Message, state: FSMContext):
+    if message.from_user.id not in ADMINS:
+        await bot.send_message(message.from_user.id, 'Щоб додати нове передбачення, потрібно мати права адміністратора.')
+    else:
+        await bot.send_message(message.from_user.id, 'Напишіть нове передбачення.\nЗ радістю додам його до списку😊')
+        await state.set_state('set_new_prediction')
+
+@dp.message_handler(state='set_new_prediction')
+async def set_new_notification(message: types.Message, state: FSMContext):
+    prediction = Prediction(text=message.text)
+    session.add(prediction)
+    session.commit()
+    await bot.send_message(message.from_user.id, 'Нове передбачення успішно додано.')
+    await state.set_state('default')
 
 async def on_startup(dispatcher):
     await set_default_commands(dispatcher)
