@@ -12,6 +12,7 @@ from aiogram.dispatcher import FSMContext
 from aiogram.utils.executor import start_webhook
 
 from sqlalchemy.orm import sessionmaker
+import time
 
 from database import *
 from keyboards import *
@@ -154,10 +155,13 @@ def predictions_9():
     send_fut.result()
 
 
+os.environ["TZ"] = "Europe/Kyiv"
+time.tzset()
+
 def run_schedule():
-    schedule.every().day.at("15:00", "Europe/Kyiv").do(predictions_15)
-    schedule.every().day.at("20:00", "Europe/Kyiv").do(predictions_20)
-    schedule.every().day.at("09:00", "Europe/Kyiv").do(predictions_9)
+    schedule.every().day.at("15:00").do(predictions_15)
+    schedule.every().day.at("20:00").do(predictions_20)
+    schedule.every().day.at("09:00").do(predictions_9)
     while True:
         schedule.run_pending()
 
