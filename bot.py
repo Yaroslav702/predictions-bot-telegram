@@ -155,9 +155,9 @@ def predictions_9():
 
 
 def run_schedule():
-    schedule.every().day.at("15:00").do(predictions_15)
-    schedule.every().day.at("20:00").do(predictions_20)
-    schedule.every().day.at("09:00").do(predictions_9)
+    schedule.every().day.at("15:00", "Europe/Kyiv").do(predictions_15)
+    schedule.every().day.at("20:00", "Europe/Kyiv").do(predictions_20)
+    schedule.every().day.at("09:00", "Europe/Kyiv").do(predictions_9)
     while True:
         schedule.run_pending()
 

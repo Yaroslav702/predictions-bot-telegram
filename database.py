@@ -11,7 +11,7 @@ host = os.getenv('HOST')
 database = os.getenv('DB_NAME')
 port = os.getenv('PORT')
 
-ENGINE = create_engine(os.environ.get("DATABASE_URL").replace("postgres", "postgresql"))
+ENGINE = create_engine(os.environ.get("DATABASE_URL"))
 
 Base = declarative_base()
 
