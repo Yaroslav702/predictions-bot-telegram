@@ -4,6 +4,7 @@ Bot provides 2-sides functionality.
 
 1 - Admin:
   - Adding predictions
+
 2 - User:
   - Change the time of the predictions getting.
 
